@@ -12,12 +12,12 @@ public class CreateReservationDto {
     @NotNull
     public Long facilityId;
 
-
+    @NotNull
     public Long tenantId;
 
-
+    @NotNull
     public LocalDateTime startDate;
 
-
+    @NotNull
     public LocalDateTime endDate;
 }

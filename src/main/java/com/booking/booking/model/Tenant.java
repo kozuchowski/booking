@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ import java.util.UUID;
 public class Tenant {
     @Id
     private UUID id;
-
+    @NotBlank(message = "Name must not be blank!")
     private String name;
 
     private LocalDateTime createdOn;
