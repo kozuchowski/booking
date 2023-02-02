@@ -5,8 +5,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-
+import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -15,15 +17,15 @@ import java.time.LocalDateTime;
 @Table(name="RESERVATIONS")
 public class Reservation {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    private UUID id;
 
-    private int tenancyPeriod;
+    private long tenancyPeriodInDays;
 
     private LocalDateTime startDate;
 
     private LocalDateTime endDate;
+
+    private LocalDateTime createdOn;
 
     @ManyToOne
     private Facility facility;
@@ -31,8 +33,17 @@ public class Reservation {
     @ManyToOne
     private Tenant tenant;
 
+    public Reservation(LocalDateTime startDate, LocalDateTime endDate, Facility facility, Tenant tenant) {
+        this.id = UUID.randomUUID();
+        this.tenancyPeriodInDays = ChronoUnit.DAYS.between(startDate, endDate);
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.createdOn = LocalDateTime.now();
+        this.facility = facility;
+        this.tenant = tenant;
+    }
 
-    public Reservation(int tenancyPeriod) {
-        this.tenancyPeriod = tenancyPeriod;
+    public void setTenancyPeriodInDays() {
+        this.tenancyPeriodInDays = ChronoUnit.DAYS.between(startDate, endDate);
     }
 }

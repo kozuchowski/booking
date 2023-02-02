@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -13,10 +15,15 @@ import javax.persistence.*;
 @Table(name="TENANTS")
 public class Tenant {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    private UUID id;
 
     private String name;
 
+    private LocalDateTime createdOn;
+
+    public Tenant(String name) {
+        this.id = UUID.randomUUID();
+        this.name = name;
+        this.createdOn = LocalDateTime.now();
+    }
 }
