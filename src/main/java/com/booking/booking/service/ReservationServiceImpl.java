@@ -100,7 +100,7 @@ public class ReservationServiceImpl implements ReservationService{
     }
 
     @Override
-    public List<Reservation> getAllReservationsForFacility(Long facilityId) {
+    public List<Reservation> getAllReservationsForFacility(UUID facilityId) {
         Optional<Facility> optionalFacility = facilityRepository.findById(facilityId);
         if(optionalFacility.isEmpty()){
             throw new NoSuchObjectException("There is no such facility!");
@@ -108,5 +108,15 @@ public class ReservationServiceImpl implements ReservationService{
         Facility facility = optionalFacility.get();
 
         return reservationRepository.findAllByFacility(facility);
+    }
+
+    @Override
+    public Reservation getSingleReservation(UUID id) {
+        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+        if(optionalReservation.isEmpty()){
+            throw new NoSuchObjectException("There is no such reservation!");
+        }
+        Reservation res = optionalReservation.get();
+        return res;
     }
 }

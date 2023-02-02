@@ -4,7 +4,6 @@ import com.booking.booking.dto.CreateReservationDto;
 import com.booking.booking.exception.InvalidPeriodException;
 import com.booking.booking.exception.NoSuchObjectException;
 import com.booking.booking.model.Reservation;
-import com.booking.booking.repository.ReservationRepository;
 import com.booking.booking.service.ReservationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -37,10 +37,27 @@ public class ReservationController {
     }
 
     @PatchMapping("/reservations/{id}")
-    public String changeReservation() {
-
+    public String changeReservation(@PathVariable UUID id,
+                                    @RequestBody CreateReservationDto resDto) {
+        reservationService.update(resDto, id);
         return "Reservation changed";
     }
+
+    @GetMapping("/reservations/{reservationId}")
+    public Reservation showReservation(@PathVariable UUID id) {
+       return reservationService.getSingleReservation(id);
+    }
+
+    @GetMapping("/reservations/{tenantName}")
+    public List<Reservation> showReservationsForTenant(@PathVariable String tenantName) {
+        return reservationService.getAllReservationForTenant(tenantName);
+    }
+
+    @GetMapping("/reservations/{facilityId}")
+    public List<Reservation> showReservationsForFacility(@PathVariable UUID facilityId) {
+        return reservationService.getAllReservationsForFacility(facilityId);
+    }
+
 
 
 
@@ -58,7 +75,7 @@ public class ReservationController {
     }
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({InvalidPeriodException.class,
-            NoSuchObjectException.class})
+                       NoSuchObjectException.class})
     public String handleAlreadyExistsExceptions(Exception ex) {
 
         return ex.getMessage();

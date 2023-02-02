@@ -14,6 +14,8 @@ public interface ReservationService {
 
     List<Reservation> getAllReservationForTenant(String tenantName);
 
-    List<Reservation> getAllReservationsForFacility(Long facilityId);
+    List<Reservation> getAllReservationsForFacility(UUID facilityId);
+
+    Reservation getSingleReservation(UUID id);
 
 }

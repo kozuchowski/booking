@@ -8,12 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Repository
 public interface FacilityRepository extends JpaRepository<Facility, Long> {
 
-    Optional<Facility> findById(Long id);
+    Optional<Facility> findById(UUID id);
 
-    List<Facility> findAllByLandlord(Landlord landlordId);
+    List<Facility> findAllByLandlord(Landlord landlord);
 }
