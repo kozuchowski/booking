@@ -19,7 +19,9 @@ import java.util.UUID;
 @Table(name="FACILITIES")
 public class Facility {
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
     @NotBlank(message = "Name must not be blank!")
     private String name;
@@ -37,10 +39,9 @@ public class Facility {
     @ManyToOne
     private Landlord landlord;
 
-    public Facility(String name, BigDecimal grossPriceInPln, double areaInMeters, String description, Landlord landlord) {
-        this.id = UUID.randomUUID();
+    public Facility(String name, Long grossPriceInPln, double areaInMeters, String description, Landlord landlord) {
         this.name = name;
-        this.grossPriceInPln = grossPriceInPln;
+        this.grossPriceInPln = BigDecimal.valueOf(grossPriceInPln);
         this.areaInMeters = areaInMeters;
         this.description = description;
         this.createdOn = LocalDateTime.now();

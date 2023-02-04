@@ -41,18 +41,17 @@ public class ReservationServiceImpl implements ReservationService{
     @Override
     public Reservation create(CreateReservationDto resDto) {
 
-
-        Optional<Facility> facilityOptional = facilityRepository.findById(resDto.facilityId);
-        if(facilityOptional.isEmpty()){
-            throw new NoSuchObjectException("There is no such facility!");
+        if(resDto.startDate.isAfter(resDto.endDate ) || resDto.startDate.isEqual(resDto.endDate)){
+            throw new IllegalArgumentException("End date must be after start date");
         }
-        Facility facility = facilityOptional.get();
 
-        Optional<Tenant> tenantOptional = tenantRepository.findById(resDto.tenantId);
-        if(tenantOptional.isEmpty()){
-            throw new NoSuchObjectException("There is no such tenant");
+        Facility facility = facilityRepository.findByName(resDto.facilityName);
+        if (facility == null){
+            throw new NoSuchObjectException("There is no such facility");
         }
-        Tenant tenant = tenantOptional.get();
+
+        Tenant tenant = new Tenant(resDto.tenantName);
+        tenantRepository.save(tenant);
 
         Reservation alreadyExisting = reservationRepository.findByFacilityAndTenancyDates(resDto);
         if(alreadyExisting != null){
@@ -69,7 +68,7 @@ public class ReservationServiceImpl implements ReservationService{
 
 
     @Override
-    public void update(CreateReservationDto resDto, UUID id) {
+    public void update(CreateReservationDto resDto, Long id) {
         Optional<Reservation> optionalRes = reservationRepository.findById(id);
         LocalDateTime now = LocalDateTime.now();
 
@@ -100,7 +99,7 @@ public class ReservationServiceImpl implements ReservationService{
     }
 
     @Override
-    public List<Reservation> getAllReservationsForFacility(UUID facilityId) {
+    public List<Reservation> getAllReservationsForFacility(Long facilityId) {
         Optional<Facility> optionalFacility = facilityRepository.findById(facilityId);
         if(optionalFacility.isEmpty()){
             throw new NoSuchObjectException("There is no such facility!");
@@ -111,7 +110,7 @@ public class ReservationServiceImpl implements ReservationService{
     }
 
     @Override
-    public Reservation getSingleReservation(UUID id) {
+    public Reservation getSingleReservation(Long id) {
         Optional<Reservation> optionalReservation = reservationRepository.findById(id);
         if(optionalReservation.isEmpty()){
             throw new NoSuchObjectException("There is no such reservation!");

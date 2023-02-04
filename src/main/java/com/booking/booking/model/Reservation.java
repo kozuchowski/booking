@@ -17,7 +17,9 @@ import java.util.UUID;
 @Table(name="RESERVATIONS")
 public class Reservation {
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
     private long tenancyPeriodInDays;
 
@@ -34,7 +36,6 @@ public class Reservation {
     private Tenant tenant;
 
     public Reservation(LocalDateTime startDate, LocalDateTime endDate, Facility facility, Tenant tenant) {
-        this.id = UUID.randomUUID();
         this.tenancyPeriodInDays = ChronoUnit.DAYS.between(startDate, endDate);
         this.startDate = startDate;
         this.endDate = endDate;

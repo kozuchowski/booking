@@ -15,7 +15,6 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -29,32 +28,33 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public UUID createReservation(@Valid @RequestBody CreateReservationDto reservationDto) {
+    public String createReservation(@Valid @RequestBody CreateReservationDto reservationDto) {
 
-        Reservation res = reservationService.create(reservationDto);
+        reservationService.create(reservationDto);
 
-        return res.getId();
+        return "Reservation created";
     }
 
     @PatchMapping("/reservations/{id}")
-    public String changeReservation(@PathVariable UUID id,
+    public String changeReservation(@PathVariable Long id,
                                     @RequestBody CreateReservationDto resDto) {
         reservationService.update(resDto, id);
         return "Reservation changed";
     }
 
-    @GetMapping("/reservations/{reservationId}")
-    public Reservation showReservation(@PathVariable UUID id) {
+    @GetMapping("/reservations/tenant/byId/{reservationId}")
+    public Reservation showReservation(@PathVariable Long id) {
+        //TODO dto instead of reservation
        return reservationService.getSingleReservation(id);
     }
 
-    @GetMapping("/reservations/{tenantName}")
+    @GetMapping("/reservations/tenant/{tenantName}")
     public List<Reservation> showReservationsForTenant(@PathVariable String tenantName) {
         return reservationService.getAllReservationForTenant(tenantName);
     }
 
-    @GetMapping("/reservations/{facilityId}")
-    public List<Reservation> showReservationsForFacility(@PathVariable UUID facilityId) {
+    @GetMapping("/reservations/facility/{facilityId}")
+    public List<Reservation> showReservationsForFacility(@PathVariable Long facilityId) {
         return reservationService.getAllReservationsForFacility(facilityId);
     }
 
@@ -75,7 +75,8 @@ public class ReservationController {
     }
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({InvalidPeriodException.class,
-                       NoSuchObjectException.class})
+                       NoSuchObjectException.class,
+                       IllegalArgumentException.class})
     public String handleAlreadyExistsExceptions(Exception ex) {
 
         return ex.getMessage();

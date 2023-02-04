@@ -16,15 +16,18 @@ import java.util.UUID;
 @Table(name="LANDLORDS")
 public class Landlord {
     @Id
-    private UUID id;
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
     @NotBlank(message = "Name must not be blank!")
     private String name;
 
     private LocalDateTime createdOn;
 
 
-    public Landlord(String name, Facility facility) {
-        this.id = UUID.randomUUID();
+    public Landlord(String name, Long id) {
+        this.id = id;
         this.name = name;
         this.createdOn = LocalDateTime.now();
     }

@@ -10,12 +10,12 @@ import java.util.UUID;
 public interface ReservationService {
     Reservation create(CreateReservationDto resDto);
 
-    void update(CreateReservationDto resDto, UUID id);
+    void update(CreateReservationDto resDto, Long id);
 
     List<Reservation> getAllReservationForTenant(String tenantName);
 
-    List<Reservation> getAllReservationsForFacility(UUID facilityId);
+    List<Reservation> getAllReservationsForFacility(Long facilityId);
 
-    Reservation getSingleReservation(UUID id);
+    Reservation getSingleReservation(Long id);
 
 }
