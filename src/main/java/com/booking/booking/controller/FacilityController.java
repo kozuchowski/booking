@@ -1,7 +1,7 @@
 package com.booking.booking.controller;
 
-import com.booking.booking.model.Facility;
-import com.booking.booking.repository.FacilityRepository;
+import com.booking.booking.dto.ShowFacilityDto;
+import com.booking.booking.service.FacilityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,16 +13,18 @@ import java.util.List;
 @RequestMapping("/api")
 public class FacilityController {
 
-    private final FacilityRepository fr;
+    private final FacilityService facilityService;
 
     @Autowired
-    public FacilityController(FacilityRepository fr) {
-        this.fr = fr;
+    public FacilityController(FacilityService facilityService) {
+        this.facilityService = facilityService;
     }
 
+
+
     @GetMapping("/facilities")
-    public List<Facility> showFacilities() {
-        //TODO sort by name, dto instead of reservation
-        return fr.findAll();
+    public List<ShowFacilityDto> showFacilities() {
+
+        return facilityService.showAllFacilities();
     }
 }

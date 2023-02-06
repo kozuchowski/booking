@@ -18,6 +18,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findAllByTenant (Tenant tenant);
 
+
     List<Reservation> findAllByFacility (Facility facility);
 
     @Query("select r from Reservation r where r.facility.name = :#{#resDto.facilityName} " +

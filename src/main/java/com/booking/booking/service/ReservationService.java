@@ -1,21 +1,26 @@
 package com.booking.booking.service;
 
 import com.booking.booking.dto.CreateReservationDto;
-import com.booking.booking.model.Facility;
+import com.booking.booking.dto.ShowReservationDetailsDto;
 import com.booking.booking.model.Reservation;
-
 import java.util.List;
-import java.util.UUID;
+
 
 public interface ReservationService {
     Reservation create(CreateReservationDto resDto);
 
-    void update(CreateReservationDto resDto, Long id);
+    ShowReservationDetailsDto update(CreateReservationDto resDto, Long id);
 
-    List<Reservation> getAllReservationForTenant(String tenantName);
+    List<ShowReservationDetailsDto> getAllReservationsForTenant(String tenantName);
 
-    List<Reservation> getAllReservationsForFacility(Long facilityId);
+    List<ShowReservationDetailsDto> getAllReservationsForFacility(Long facilityId);
 
-    Reservation getSingleReservation(Long id);
+    ShowReservationDetailsDto getSingleReservation(Long id);
+
+    List<ShowReservationDetailsDto> reservationsIntoDtos (List<Reservation> reservations);
+
+    ShowReservationDetailsDto reservationDtoIntoShowReservationDetailsDto(Reservation reservation);
+
+    boolean validateReservationDates(CreateReservationDto reservationDto);
 
 }

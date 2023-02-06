@@ -27,7 +27,7 @@ public class BookingApplication {
 				Landlord landlord = new Landlord("Właściciel" + i, Long.valueOf(i));
 				lr.save(landlord);
 				for (int j = 0; j < i; j++) {
-					fr.save(new Facility("mieszkanko" + count++, 200L + i * 100, 200 + i * 10, "fajne mieszkanko" + i, landlord));
+					fr.save(new Facility("mieszkanko" + count++, 200L + i * 100, 200 + i * 10, "fajne mieszkanko" + count, landlord));
 				}
 			}
 

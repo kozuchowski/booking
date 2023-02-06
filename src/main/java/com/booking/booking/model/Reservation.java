@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -27,6 +28,8 @@ public class Reservation {
 
     private LocalDateTime endDate;
 
+    private BigDecimal summaryPrice;
+
     private LocalDateTime createdOn;
 
     @ManyToOne
@@ -42,6 +45,7 @@ public class Reservation {
         this.createdOn = LocalDateTime.now();
         this.facility = facility;
         this.tenant = tenant;
+        this.summaryPrice = facility.getGrossPricePerDayInPln().multiply(BigDecimal.valueOf(tenancyPeriodInDays));
     }
 
     public void setTenancyPeriodInDays() {

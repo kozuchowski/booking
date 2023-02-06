@@ -1,9 +1,10 @@
 package com.booking.booking.controller;
 
 import com.booking.booking.dto.CreateReservationDto;
+import com.booking.booking.dto.ShowReservationDetailsDto;
 import com.booking.booking.exception.InvalidPeriodException;
 import com.booking.booking.exception.NoSuchObjectException;
-import com.booking.booking.model.Reservation;
+import com.booking.booking.repository.ReservationRepository;
 import com.booking.booking.service.ReservationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,41 +22,41 @@ import java.util.Map;
 public class ReservationController {
 
     private final ReservationServiceImpl reservationService;
+    private final ReservationRepository reservationRepository;
 
     @Autowired
-    public ReservationController(ReservationServiceImpl reservationService) {
+    public ReservationController(ReservationServiceImpl reservationService,
+                                 ReservationRepository reservationRepository) {
         this.reservationService = reservationService;
+        this.reservationRepository = reservationRepository;
     }
 
     @PostMapping("/reservations")
-    public String createReservation(@Valid @RequestBody CreateReservationDto reservationDto) {
+    public ShowReservationDetailsDto createReservation(@Valid @RequestBody CreateReservationDto reservationDto) {
 
-        reservationService.create(reservationDto);
-
-        return "Reservation created";
+        return reservationService.reservationDtoIntoShowReservationDetailsDto(reservationService.create(reservationDto));
     }
 
     @PatchMapping("/reservations/{id}")
-    public String changeReservation(@PathVariable Long id,
+    public ShowReservationDetailsDto changeReservation(@PathVariable Long id,
                                     @RequestBody CreateReservationDto resDto) {
-        reservationService.update(resDto, id);
-        return "Reservation changed";
+
+        return reservationService.update(resDto, id);
     }
 
-    @GetMapping("/reservations/tenant/byId/{reservationId}")
-    public Reservation showReservation(@PathVariable Long id) {
-        //TODO dto instead of reservation
-       return reservationService.getSingleReservation(id);
+    @GetMapping("/reservations/{id}")
+    public ShowReservationDetailsDto showReservation(@PathVariable Long id) {
+        return reservationService.getSingleReservation(id);
     }
 
-    @GetMapping("/reservations/tenant/{tenantName}")
-    public List<Reservation> showReservationsForTenant(@PathVariable String tenantName) {
-        return reservationService.getAllReservationForTenant(tenantName);
+    @GetMapping("/reservations/tenants/{tenantName}")
+    public List<ShowReservationDetailsDto> showReservationsForTenant(@PathVariable String tenantName) {
+        return reservationService.getAllReservationsForTenant(tenantName);
     }
 
-    @GetMapping("/reservations/facility/{facilityId}")
-    public List<Reservation> showReservationsForFacility(@PathVariable Long facilityId) {
-        return reservationService.getAllReservationsForFacility(facilityId);
+    @GetMapping("/reservations/facilities/{id}")
+    public List<ShowReservationDetailsDto> showReservationsForFacility(@PathVariable Long id) {
+        return reservationService.getAllReservationsForFacility(id);
     }
 
 
