@@ -1,11 +1,12 @@
 package com.booking.booking.dto;
 
-public class FacilityReportDto {
 
-    public Long facilityId;
+public interface FacilityReportDto {
 
-    public String faciliyName;
-    public int totalReservationsDays;
+     Long getFacilityId();
 
-    public int totalReservationsCount;
+     String getFacilityName();
+     int getTotalReservationsDays();
+
+     int getTotalReservationsCount();
 }

@@ -1,9 +1,12 @@
 package com.booking.booking.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.booking.booking.dto.FacilityReportDto;
+import com.booking.booking.dto.LandlordAllFacilitiesReportDto;
+import com.booking.booking.dto.ReportDatesDto;
+import com.booking.booking.repository.ReportRepository;
+import com.booking.booking.repository.ReservationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,16 +15,21 @@ import java.util.List;
 @RequestMapping("/raports")
 public class ReportController {
 
-    @GetMapping("/facilities/{name}/{starts}/{ends}")
-    public String facilityReservationsStatistics(@PathVariable String name,
-                                                 @PathVariable LocalDateTime starts,
-                                                 @PathVariable LocalDateTime ends) {
-        throw new RuntimeException("Not implemented yet");
+    private final ReportRepository reportRepository;
+
+    @Autowired
+    public ReportController(ReportRepository reportRepository) {
+        this.reportRepository = reportRepository;
     }
 
-    @GetMapping("/landlords-facilities-reservations/{starts}/{ends}")
-    public List<String> landlordsWithFacilitiesStatistics(@PathVariable LocalDateTime starts,
-                                                          @PathVariable LocalDateTime ends) {
-        throw new RuntimeException("Not implemented yet");
+    @PostMapping("/facilities/{facilityId}")
+    public FacilityReportDto facilityReservationsStatistics(@PathVariable Long facilityId,
+                                                            @RequestBody ReportDatesDto datesDto){
+        return reportRepository.findAllReservationsDaysCountWithReservationsCount(facilityId, datesDto.starts, datesDto.ends);
+    }
+
+    @PostMapping("/landlords-facilities-reservations")
+    public List<LandlordAllFacilitiesReportDto> landlordsWithFacilitiesStatistics(@RequestBody ReportDatesDto reportDto) {
+        return reportRepository.findReservedFacilitiesCountWithReservationsPerFacilityCountAndFacilitiesIncome(reportDto.starts,reportDto.ends);
     }
 }

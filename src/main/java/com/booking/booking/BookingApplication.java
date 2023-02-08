@@ -23,10 +23,11 @@ public class BookingApplication {
 	CommandLineRunner  populateDatabase(FacilityRepository fr, LandlordRepository lr) {
 		return args -> {
 			int count = 1;
-			for (int i = 1; i < 11; i++) {
+			for (int i = 1; i < 5; i++) {
 				Landlord landlord = new Landlord("Właściciel" + i, Long.valueOf(i));
+				int random = (int) ((Math.random() * (3)) + 1);
 				lr.save(landlord);
-				for (int j = 0; j < i; j++) {
+				for (int j = 0; j < random; j++) {
 					fr.save(new Facility("mieszkanko" + count++, 200L + i * 100, 200 + i * 10, "fajne mieszkanko" + count, landlord));
 				}
 			}
