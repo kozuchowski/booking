@@ -1,6 +1,5 @@
 package com.booking.booking.repository;
 
-import com.booking.booking.dto.FacilityRaportDto;
 import com.booking.booking.model.Facility;
 import com.booking.booking.model.Landlord;
 import org.springframework.data.jpa.repository.JpaRepository;

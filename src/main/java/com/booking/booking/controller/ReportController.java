@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/raports")
-public class RaportController {
+public class ReportController {
 
     @GetMapping("/facilities/{name}/{starts}/{ends}")
     public String facilityReservationsStatistics(@PathVariable String name,
