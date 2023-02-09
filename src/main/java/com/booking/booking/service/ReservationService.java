@@ -23,4 +23,6 @@ public interface ReservationService {
 
     boolean validateReservationDates(CreateReservationDto reservationDto);
 
+    boolean checkIfVacant(CreateReservationDto reservationDto);
+
 }

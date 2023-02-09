@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 public class CreateReservationDto {
 
-    @NotBlank(message = "Facility name must not be blank")
-    public String facilityName;
+    @NotNull
+    public Long facilityId;
 
     @NotBlank(message = "Name must not be blank")
     public String tenantName;

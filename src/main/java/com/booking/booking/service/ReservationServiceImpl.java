@@ -45,10 +45,12 @@ public class ReservationServiceImpl implements ReservationService{
 
         validateReservationDates(resDto);
 
-        Facility facility = facilityRepository.findByName(resDto.facilityName);
-        if (facility == null){
+        Optional<Facility> optionalFacility = facilityRepository.findById(resDto.facilityId);
+
+        if (optionalFacility.isEmpty()){
             throw new NoSuchObjectException("There is no such facility");
         }
+        Facility facility = optionalFacility.get();
         Tenant tenant;
         if(tenantRepository.findByTenantName(resDto.tenantName) != null){
             tenant = tenantRepository.findByTenantName(resDto.tenantName);
@@ -59,10 +61,7 @@ public class ReservationServiceImpl implements ReservationService{
 
         tenantRepository.save(tenant);
 
-        Reservation alreadyExisting = reservationRepository.findByFacilityAndTenancyDates(resDto);
-        if(alreadyExisting != null){
-            throw new InvalidPeriodException("This object is not vacant due to this period!");
-        }
+        checkIfVacant(resDto);
 
         Reservation res = new Reservation(resDto.startDate, resDto.endDate, facility, tenant);
 
@@ -74,9 +73,16 @@ public class ReservationServiceImpl implements ReservationService{
 
 
     @Override
-    public ShowReservationDetailsDto update(CreateReservationDto resDto, Long id) {
-        Optional<Reservation> optionalRes = reservationRepository.findById(id);
+    public ShowReservationDetailsDto update(CreateReservationDto resDto, Long reservationsId) {
+        Optional<Reservation> optionalRes = reservationRepository.findById(reservationsId);
         LocalDateTime now = LocalDateTime.now();
+        Optional<Facility> optionalFacility = facilityRepository.findById(resDto.facilityId);
+
+        if(optionalFacility.isEmpty()){
+            throw new NoSuchObjectException("There is no such facility");
+        }
+
+        Facility facility = optionalFacility.get();
 
         if(optionalRes.isEmpty()){
             throw new NoSuchObjectException("There is no such reservation!");
@@ -88,7 +94,10 @@ public class ReservationServiceImpl implements ReservationService{
         }
 
         validateReservationDates(resDto);
-        res.setFacility(facilityRepository.findByName(resDto.facilityName));
+
+        checkIfVacant(resDto);
+
+        res.setFacility(facility);
         res.setStartDate(resDto.startDate);
         res.setEndDate(resDto.endDate);
         res.setTenancyPeriodInDays();
@@ -174,6 +183,25 @@ public class ReservationServiceImpl implements ReservationService{
 
         if(resDto.startDate.isAfter(resDto.endDate ) || resDto.startDate.isEqual(resDto.endDate)){
             throw new IllegalArgumentException("End date must be after start date");
+        }
+        return true;
+    }
+
+    @Override
+    public boolean checkIfVacant(CreateReservationDto resDto) {
+        List<Reservation> reservations = reservationRepository.findReservationsByFacilityId(resDto.facilityId);
+        LocalDateTime starts = resDto.startDate;
+        LocalDateTime ends = resDto.endDate;
+
+        for (Reservation r : reservations) {
+
+            if(starts.isEqual(r.getStartDate()) || starts.isAfter(r.getStartDate())
+                    && starts.isEqual(r.getEndDate()) || starts.isBefore(r.getEndDate())
+                    || ends.isEqual(r.getStartDate()) || ends.isAfter(r.getStartDate())
+                    && ends.isEqual(r.getEndDate()) || ends.isBefore(r.getEndDate()) ){
+
+                throw new InvalidPeriodException("This object is not vacant due to this period!");
+            }
         }
         return true;
     }
