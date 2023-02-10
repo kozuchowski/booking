@@ -196,9 +196,10 @@ public class ReservationServiceImpl implements ReservationService{
         for (Reservation r : reservations) {
 
             if(starts.isEqual(r.getStartDate()) || starts.isAfter(r.getStartDate())
-                    && starts.isEqual(r.getEndDate()) || starts.isBefore(r.getEndDate())
-                    || ends.isEqual(r.getStartDate()) || ends.isAfter(r.getStartDate())
-                    && ends.isEqual(r.getEndDate()) || ends.isBefore(r.getEndDate()) ){
+               && starts.isEqual(r.getEndDate()) || starts.isBefore(r.getEndDate())
+               || ends.isEqual(r.getStartDate()) || ends.isAfter(r.getStartDate())
+               && ends.isEqual(r.getEndDate()) || ends.isBefore(r.getEndDate())
+               ||starts.isBefore(r.getStartDate()) && ends.isAfter(r.getEndDate())){
 
                 throw new InvalidPeriodException("This object is not vacant due to this period!");
             }
