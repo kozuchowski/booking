@@ -4,7 +4,6 @@ import com.booking.booking.dto.CreateReservationDto;
 import com.booking.booking.dto.ShowReservationDetailsDto;
 import com.booking.booking.exception.InvalidPeriodException;
 import com.booking.booking.exception.NoSuchObjectException;
-import com.booking.booking.repository.ReservationRepository;
 import com.booking.booking.service.ReservationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,13 +21,11 @@ import java.util.Map;
 public class ReservationController {
 
     private final ReservationServiceImpl reservationService;
-    private final ReservationRepository reservationRepository;
 
     @Autowired
-    public ReservationController(ReservationServiceImpl reservationService,
-                                 ReservationRepository reservationRepository) {
+    public ReservationController(ReservationServiceImpl reservationService) {
         this.reservationService = reservationService;
-        this.reservationRepository = reservationRepository;
+
     }
 
     @PostMapping("/reservations")

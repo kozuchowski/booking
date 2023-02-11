@@ -10,10 +10,9 @@ RUN mvn clean package
 
 FROM openjdk:18-jdk-alpine
 
-COPY --from=builder /app/target/bookkng-0.0.1-SNAPSHOT.jar /app/booking-0.0.1-SNAPSHOT.jar
+COPY --from=builder /app/target/booking-0.0.1-SNAPSHOT.jar /app/booking-0.0.1-SNAPSHOT.jar
 
 EXPOSE 8080
 
 CMD ["java", "-jar", "/app/booking-0.0.1-SNAPSHOT.jar"]
 
-#target/booking-0.0.1-SNAPSHOT.jar

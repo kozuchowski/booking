@@ -52,6 +52,7 @@ public class ReservationServiceImpl implements ReservationService{
         }
         Facility facility = optionalFacility.get();
         Tenant tenant;
+
         if(tenantRepository.findByTenantName(resDto.tenantName) != null){
             tenant = tenantRepository.findByTenantName(resDto.tenantName);
         }else {
@@ -87,6 +88,7 @@ public class ReservationServiceImpl implements ReservationService{
         if(optionalRes.isEmpty()){
             throw new NoSuchObjectException("There is no such reservation!");
         }
+
         Reservation res = optionalRes.get();
 
         if(resDto.startDate.isBefore(now) || resDto.startDate.equals(now)){
@@ -108,7 +110,9 @@ public class ReservationServiceImpl implements ReservationService{
 
     @Override
     public List<ShowReservationDetailsDto> getAllReservationsForTenant(String tenantName) {
+
         Tenant tenant = tenantRepository.findByTenantName(tenantName);
+
         if(tenant == null){
             throw new NoSuchObjectException("There is no such tenant!");
         }
@@ -120,6 +124,7 @@ public class ReservationServiceImpl implements ReservationService{
     @Override
     public List<ShowReservationDetailsDto> getAllReservationsForFacility(Long facilityId) {
         Optional<Facility> optionalFacility = facilityRepository.findById(facilityId);
+
         if(optionalFacility.isEmpty()){
             throw new NoSuchObjectException("There is no such facility!");
         }
@@ -133,10 +138,13 @@ public class ReservationServiceImpl implements ReservationService{
 
     @Override
     public ShowReservationDetailsDto getSingleReservation(Long id) {
+
         Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+
         if(optionalReservation.isEmpty()){
             throw new NoSuchObjectException("There is no such reservation!");
         }
+
         Reservation reservation = optionalReservation.get();
 
         return new ShowReservationDetailsDto(reservation.getId(),
@@ -151,7 +159,9 @@ public class ReservationServiceImpl implements ReservationService{
 
     @Override
     public List<ShowReservationDetailsDto> reservationsIntoDtos(List<Reservation> reservations) {
+
         List<ShowReservationDetailsDto> dtoReservations = new ArrayList<>();
+
         for (Reservation reservation : reservations) {
             dtoReservations.add(new ShowReservationDetailsDto(reservation.getId(),
                     reservation.getTenant().getName(),
@@ -161,11 +171,13 @@ public class ReservationServiceImpl implements ReservationService{
                     reservation.getTenancyPeriodInDays(),
                     reservation.getSummaryPrice()));
         }
+
         return dtoReservations;
     }
 
     @Override
     public ShowReservationDetailsDto reservationDtoIntoShowReservationDetailsDto(Reservation r) {
+
         return new ShowReservationDetailsDto(r.getId(),
                                             r.getTenant().getName(),
                                             r.getFacility().getName(),
@@ -177,18 +189,21 @@ public class ReservationServiceImpl implements ReservationService{
 
     @Override
     public boolean validateReservationDates(CreateReservationDto resDto) {
-        if(resDto.startDate.isBefore(LocalDateTime.now())){
+
+        if(!isDateAfterCurrentDate(resDto.startDate)){
             throw new IllegalArgumentException("Start date must be after current date");
         }
 
-        if(resDto.startDate.isAfter(resDto.endDate ) || resDto.startDate.isEqual(resDto.endDate)){
+        if(!isEndDateAfterStartDate(resDto.startDate, resDto.endDate)){
             throw new IllegalArgumentException("End date must be after start date");
         }
+
         return true;
     }
 
     @Override
     public boolean checkIfVacant(CreateReservationDto resDto) {
+
         List<Reservation> reservations = reservationRepository.findReservationsByFacilityId(resDto.facilityId);
         LocalDateTime starts = resDto.startDate;
         LocalDateTime ends = resDto.endDate;
@@ -204,6 +219,22 @@ public class ReservationServiceImpl implements ReservationService{
                 throw new InvalidPeriodException("This object is not vacant due to this period!");
             }
         }
+
         return true;
     }
+
+    public boolean isDateAfterCurrentDate(LocalDateTime date) {
+        if(date.isAfter(LocalDateTime.now())){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isEndDateAfterStartDate(LocalDateTime starts, LocalDateTime ends) {
+        if(ends.isAfter(starts)){
+            return true;
+        }
+        return false;
+    }
+
 }
