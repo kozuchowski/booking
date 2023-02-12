@@ -100,7 +100,9 @@ public class ReservationServiceImpl implements ReservationService{
 
         // TODO validation should not include dates in current reservation
 
+
         checkIfVacant(resDto);
+
 
         res.setFacility(facility);
         res.setStartDate(resDto.startDate);
@@ -244,11 +246,11 @@ public class ReservationServiceImpl implements ReservationService{
 //    public boolean checkIfDatesCover (LocalDateTime starts, LocalDateTime ends,
 //                                      LocalDateTime newStart, LocalDateTime newEnd){
 //
-//        if(starts.isEqual(r.getStartDate()) || starts.isAfter(r.getStartDate())
-//                && starts.isEqual(r.getEndDate()) || starts.isBefore(r.getEndDate())
-//                || ends.isEqual(r.getStartDate()) || ends.isAfter(r.getStartDate())
-//                && ends.isEqual(r.getEndDate()) || ends.isBefore(r.getEndDate())
-//                ||starts.isBefore(r.getStartDate()) && ends.isAfter(r.getEndDate())) {
+//        if(newStart.isEqual(newStart) || newStart.isAfter(starts)
+//           && newStart.isEqual(starts) || newStart.isBefore(ends)
+//           || newEnd.isEqual(starts) || newEnd.isAfter(starts)
+//           && newEnd.isEqual(ends) || newEnd.isBefore(ends)
+//           ||newStart.isBefore(starts) && newEnd.isAfter(ends)) {
 //            return true;
 //        }
 //        return false;
