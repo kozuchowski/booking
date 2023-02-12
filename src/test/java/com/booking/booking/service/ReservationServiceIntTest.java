@@ -2,11 +2,22 @@ package com.booking.booking.service;
 
 import com.booking.booking.dto.CreateReservationDto;
 import com.booking.booking.exception.InvalidPeriodException;
+import com.booking.booking.exception.NoSuchObjectException;
+import com.booking.booking.model.Facility;
+import com.booking.booking.model.Landlord;
+import com.booking.booking.model.Reservation;
+import com.booking.booking.model.Tenant;
+import com.booking.booking.repository.FacilityRepository;
+import com.booking.booking.repository.LandlordRepository;
+import com.booking.booking.repository.ReservationRepository;
+import com.booking.booking.repository.TenantRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.junit.jupiter.api.Assertions.*;
+
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,32 +27,208 @@ class ReservationServiceIntTest {
 
 
     private final ReservationServiceImpl reservationService;
+
+    private final LandlordRepository landlordRepository;
+
+    private final FacilityRepository facilityRepository;
+
+    private final ReservationRepository reservationRepository;
+
     @Autowired
-    ReservationServiceIntTest(ReservationServiceImpl reservationService) {
+    public ReservationServiceIntTest(ReservationServiceImpl reservationService, LandlordRepository landlordRepository,
+                                     FacilityRepository facilityRepository, ReservationRepository reservationRepository) {
         this.reservationService = reservationService;
+        this.landlordRepository = landlordRepository;
+        this.facilityRepository = facilityRepository;
+        this.reservationRepository = reservationRepository;
     }
+
+
+
+    // Create reservation #######################################
+    @Test
+    void shouldThrowNoSuchObjectException(){
+        assertThrows(NoSuchObjectException.class,
+                () -> {
+                    reservationService.create(new CreateReservationDto(-1l, "test",
+                            LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2)));
+                });
+    }
+
 
 
     @Test
-    void create() {
+    void shouldCreateValidReservation() {
+        Landlord landlord = new Landlord("test", 0l);
+        landlordRepository.save(landlord);
+        Facility facility = new Facility(UUID.randomUUID().toString(),1l, 1, "test", landlord);
+        facilityRepository.save(facility);
+        Reservation res = reservationService.create(new CreateReservationDto(
+                        facilityRepository.findByName(facility.getName()).getId(), "test",
+                        LocalDateTime.now().plusYears(1000), LocalDateTime.now().plusYears(1001)));
+
+        assertNotNull(res);
+        assertNotNull(res.getFacility());
+        assertNotNull(res.getTenant());
+
+        reservationRepository.deleteById(res.getId());
 
     }
 
-
+    // Update reservation #######################################
 
     @Test
-    void update() {
+    void shouldThrowNoSuchObjectExceptionForFacility() {
+        Landlord landlord = new Landlord("test", 0l);
+        landlordRepository.save(landlord);
+        Facility facility = new Facility("test",1l, 1, "test", landlord);
+        facilityRepository.save(facility);
+        CreateReservationDto resDto = new CreateReservationDto(2l, "test",
+                LocalDateTime.now().plusYears(1000), LocalDateTime.now().plusYears(1001));
+        Reservation res = reservationService.create(resDto);
+
+        assertThrows(NoSuchObjectException.class,
+                () -> {
+                    reservationService.update(resDto, -1l);
+                });
+
+        reservationRepository.deleteById(res.getId());
+    }
+    @Test
+    void shouldThrowNoSuchObjectExceptionForReservation() {
+        Landlord landlord = new Landlord("test", 0l);
+        landlordRepository.save(landlord);
+        Facility facility = new Facility("test",1l, 1, "test", landlord);
+        facilityRepository.save(facility);
+        CreateReservationDto resDto = new CreateReservationDto(2l, "test",
+                LocalDateTime.now().plusYears(1000), LocalDateTime.now().plusYears(1001));
+        assertThrows(NoSuchObjectException.class,
+                () -> {
+                    reservationService.update(resDto, -1l);
+                });
+    }
+    //TODO Check test for update
+//    @Test
+//    void shouldUpdateReservationDetails() {
+//        Landlord landlord = new Landlord("test", 0l);
+//        landlordRepository.save(landlord);
+//        Facility facility = new Facility("test",1l, 1, "test", landlord);
+//        facilityRepository.save(facility);
+//
+//        CreateReservationDto resDto = new CreateReservationDto(facility.getId(), "test",
+//                LocalDateTime.now().plusYears(1000), LocalDateTime.now().plusYears(1001));
+//
+//        Reservation res = reservationService.create(resDto);
+//
+//        LocalDateTime newStart = LocalDateTime.now().plusYears(2000);
+//        LocalDateTime newEnd = LocalDateTime.now().plusYears(2001);
+//        reservationService.update(new CreateReservationDto(facility.getId(), "newTest", newStart, newEnd), res.getId());
+//
+//        Reservation updatedReservation = reservationRepository.findById(res.getId()).get();
+//
+//        assertTrue(updatedReservation.getStartDate().isEqual(newStart));
+//        assertTrue(updatedReservation.getEndDate().isEqual(newEnd));
+//
+//        Tenant tenant = res.getTenant();
+//
+//        reservationRepository.delete(res);
+//        facilityRepository.delete(facility);
+//        landlordRepository.delete(landlord);
+//        tenantRepository.delete(tenant);
+//    }
+
+    // List of reservations for tenant ###################################################
+
+    @Test
+    void shouldThrowNoSuchObjectExceptionForTenant() {
+        assertThrows(NoSuchObjectException.class,
+                () -> {
+                    reservationService.getAllReservationsForTenant(UUID.randomUUID().toString());
+                });
     }
 
     @Test
-    void getAllReservationsForTenant() {
+    void listOfReservationsShouldNotBeEmpty() {
+        Tenant tenant = new Tenant(UUID.randomUUID().toString());
+        tenantRepository.save(tenant);
+
+        Landlord landlord = new Landlord("test", -1l);
+        landlordRepository.save(landlord);
+
+        Facility facility1 = new Facility("test", 1l, 1l, "test", landlord);
+        Facility facility2 = new Facility("test2", 1l, 1l, "test", landlord);
+        facilityRepository.save(facility1);
+        facilityRepository.save(facility2);
+
+        CreateReservationDto resDto1 = new CreateReservationDto(facility1.getId(), tenant.getName(),
+                LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10));
+
+        CreateReservationDto resDto2 = new CreateReservationDto(facility2.getId(), tenant.getName(),
+                LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10));
+
+        Reservation res1 = reservationService.create(resDto1);
+        Reservation res2 = reservationService.create(resDto2);
+
+        assertTrue(!reservationService.getAllReservationsForTenant(tenant.getName()).isEmpty());
+
+        reservationRepository.delete(res1);
+        reservationRepository.delete(res2);
+        facilityRepository.delete(facility1);
+        facilityRepository.delete(facility2);
+        landlordRepository.delete(landlord);
+        tenantRepository.delete(tenant);
+
+
     }
+
+    // List of reservations for facility ###################################################
+
+    @Test
+    void shouldThrowExceptionForNoFacility() {
+        assertThrows(NoSuchObjectException.class,
+                () -> {
+                    reservationService.getAllReservationsForFacility(-1l);
+                });
+    }
+
+    @Test
+    void listOfReservationsForFacilityShoudNotBeEmpty() {
+        Tenant tenant = new Tenant(UUID.randomUUID().toString());
+        tenantRepository.save(tenant);
+
+        Landlord landlord = new Landlord("test", -1l);
+        landlordRepository.save(landlord);
+
+        Facility facility = new Facility("test", 1l, 1l, "test", landlord);
+        facilityRepository.save(facility);
+
+
+        CreateReservationDto resDto1 = new CreateReservationDto(facility.getId(), tenant.getName(),
+                LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(10));
+
+        CreateReservationDto resDto2 = new CreateReservationDto(facility.getId(), tenant.getName(),
+                LocalDateTime.now().plusDays(11), LocalDateTime.now().plusDays(15));
+
+        Reservation res1 = reservationService.create(resDto1);
+        Reservation res2 = reservationService.create(resDto2);
+
+        assertTrue(!reservationService.getAllReservationsForFacility(facility.getId()).isEmpty());
+
+        reservationRepository.delete(res1);
+        reservationRepository.delete(res2);
+        facilityRepository.delete(facility);
+        landlordRepository.delete(landlord);
+        tenantRepository.delete(tenant);
+
+    }
+
+
 
     @Test
     void getAllReservationsForFacility() {
     }
 
-    // Validate reservations dates tests ###################################################
+    // Validate reservations dates ###################################################
 
     LocalDateTime validStart = LocalDateTime.of(2024,01, 01, 01, 01, 01, 01);
     LocalDateTime validEnd = LocalDateTime.of(2025,01, 01, 01, 01, 01, 01);
@@ -75,6 +262,9 @@ class ReservationServiceIntTest {
     CreateReservationDto invalidResDto1 = new CreateReservationDto(2l, "test", validStart, earlyEnd);
     CreateReservationDto invalidResDto2 = new CreateReservationDto(2l, "test", earlyStart, validEnd);
     CreateReservationDto invalidResDto3 = new CreateReservationDto(2l, "test", earlyStart, earlyEnd);
+    @Autowired
+    private TenantRepository tenantRepository;
+
 
     @Test
     void reservationDatesShouldBeValid(){

@@ -74,8 +74,8 @@ public class ReservationServiceImpl implements ReservationService{
 
 
     @Override
-    public ShowReservationDetailsDto update(CreateReservationDto resDto, Long reservationsId) {
-        Optional<Reservation> optionalRes = reservationRepository.findById(reservationsId);
+    public ShowReservationDetailsDto update(CreateReservationDto resDto, Long reservationId) {
+        Optional<Reservation> optionalRes = reservationRepository.findById(reservationId);
         LocalDateTime now = LocalDateTime.now();
         Optional<Facility> optionalFacility = facilityRepository.findById(resDto.facilityId);
 
@@ -91,10 +91,10 @@ public class ReservationServiceImpl implements ReservationService{
 
         Reservation res = optionalRes.get();
 
-        if(resDto.startDate.isBefore(now) || resDto.startDate.equals(now)){
+        if(!now.isBefore(res.getStartDate())){
             throw new IllegalArgumentException("Reservation already started!");
         }
-
+        // TODO validation should not include dates in current reservation
         validateReservationDates(resDto);
 
         checkIfVacant(resDto);

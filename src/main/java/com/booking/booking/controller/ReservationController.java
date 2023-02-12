@@ -34,11 +34,11 @@ public class ReservationController {
         return reservationService.reservationDtoIntoShowReservationDetailsDto(reservationService.create(reservationDto));
     }
 
-    @PatchMapping("/reservations/{id}")
-    public ShowReservationDetailsDto changeReservation(@PathVariable Long id,
+    @PatchMapping("/reservations/{reservationId}")
+    public ShowReservationDetailsDto changeReservation(@PathVariable Long reservationId,
                                     @RequestBody CreateReservationDto resDto) {
 
-        return reservationService.update(resDto, id);
+        return reservationService.update(resDto, reservationId);
     }
 
     @GetMapping("/reservations/{id}")
