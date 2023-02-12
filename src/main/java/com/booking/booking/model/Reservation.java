@@ -49,4 +49,6 @@ public class Reservation {
     public void setTenancyPeriodInDays() {
         this.tenancyPeriodInDays = ChronoUnit.DAYS.between(startDate, endDate);
     }
+    public void setSummaryPrice() {this.summaryPrice =
+            facility.getGrossPricePerDayInPln().multiply(BigDecimal.valueOf(tenancyPeriodInDays));}
 }

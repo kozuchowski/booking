@@ -12,6 +12,7 @@ import com.booking.booking.repository.ReservationRepository;
 import com.booking.booking.repository.TenantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -94,8 +95,10 @@ public class ReservationServiceImpl implements ReservationService{
         if(!now.isBefore(res.getStartDate())){
             throw new IllegalArgumentException("Reservation already started!");
         }
-        // TODO validation should not include dates in current reservation
+
         validateReservationDates(resDto);
+
+        // TODO validation should not include dates in current reservation
 
         checkIfVacant(resDto);
 
@@ -103,8 +106,9 @@ public class ReservationServiceImpl implements ReservationService{
         res.setStartDate(resDto.startDate);
         res.setEndDate(resDto.endDate);
         res.setTenancyPeriodInDays();
+        res.setSummaryPrice();
 
-        reservationRepository.save(res);
+        reservationRepository.saveAndFlush(res);
         return reservationDtoIntoShowReservationDetailsDto(res);
     }
 
@@ -236,5 +240,18 @@ public class ReservationServiceImpl implements ReservationService{
         }
         return false;
     }
+
+//    public boolean checkIfDatesCover (LocalDateTime starts, LocalDateTime ends,
+//                                      LocalDateTime newStart, LocalDateTime newEnd){
+//
+//        if(starts.isEqual(r.getStartDate()) || starts.isAfter(r.getStartDate())
+//                && starts.isEqual(r.getEndDate()) || starts.isBefore(r.getEndDate())
+//                || ends.isEqual(r.getStartDate()) || ends.isAfter(r.getStartDate())
+//                && ends.isEqual(r.getEndDate()) || ends.isBefore(r.getEndDate())
+//                ||starts.isBefore(r.getStartDate()) && ends.isAfter(r.getEndDate())) {
+//            return true;
+//        }
+//        return false;
+//    }
 
 }

@@ -7,10 +7,7 @@ import com.booking.booking.model.Facility;
 import com.booking.booking.model.Landlord;
 import com.booking.booking.model.Reservation;
 import com.booking.booking.model.Tenant;
-import com.booking.booking.repository.FacilityRepository;
-import com.booking.booking.repository.LandlordRepository;
-import com.booking.booking.repository.ReservationRepository;
-import com.booking.booking.repository.TenantRepository;
+import com.booking.booking.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -108,34 +105,37 @@ class ReservationServiceIntTest {
                 });
     }
     //TODO Check test for update
-//    @Test
-//    void shouldUpdateReservationDetails() {
-//        Landlord landlord = new Landlord("test", 0l);
-//        landlordRepository.save(landlord);
-//        Facility facility = new Facility("test",1l, 1, "test", landlord);
-//        facilityRepository.save(facility);
-//
-//        CreateReservationDto resDto = new CreateReservationDto(facility.getId(), "test",
-//                LocalDateTime.now().plusYears(1000), LocalDateTime.now().plusYears(1001));
-//
-//        Reservation res = reservationService.create(resDto);
-//
-//        LocalDateTime newStart = LocalDateTime.now().plusYears(2000);
-//        LocalDateTime newEnd = LocalDateTime.now().plusYears(2001);
-//        reservationService.update(new CreateReservationDto(facility.getId(), "newTest", newStart, newEnd), res.getId());
-//
-//        Reservation updatedReservation = reservationRepository.findById(res.getId()).get();
-//
-//        assertTrue(updatedReservation.getStartDate().isEqual(newStart));
-//        assertTrue(updatedReservation.getEndDate().isEqual(newEnd));
-//
-//        Tenant tenant = res.getTenant();
-//
-//        reservationRepository.delete(res);
-//        facilityRepository.delete(facility);
-//        landlordRepository.delete(landlord);
-//        tenantRepository.delete(tenant);
-//    }
+    @Test
+    void shouldUpdateReservationDetails() {
+        Landlord landlord = new Landlord("test", -1l);
+        landlordRepository.save(landlord);
+        Facility facility = new Facility("test",1l, 1, "test", landlord);
+        facilityRepository.save(facility);
+
+        CreateReservationDto resDto = new CreateReservationDto(facility.getId(), "test",
+                LocalDateTime.now().plusYears(1000), LocalDateTime.now().plusYears(1001));
+
+        Reservation res = reservationService.create(resDto);
+
+        LocalDateTime newStart = LocalDateTime.now().plusYears(2000);
+        LocalDateTime newEnd = LocalDateTime.now().plusYears(2001);
+        reservationService.update(new CreateReservationDto(facility.getId(), "newTest", newStart, newEnd), res.getId());
+
+        Reservation updatedReservation = reservationRepository.findById(res.getId()).get();
+
+        System.out.println(updatedReservation.getStartDate());
+        System.out.println(updatedReservation.getEndDate());
+        System.out.println(updatedReservation.getTenant().getName());
+
+        assertTrue(updatedReservation.getTenant().getName().equals("newTest"));
+        assertTrue(updatedReservation.getStartDate().isEqual(newStart));
+        assertTrue(updatedReservation.getEndDate().isEqual(newEnd));
+
+
+        reservationRepository.delete(res);
+        facilityRepository.delete(facility);
+        landlordRepository.delete(landlord);
+    }
 
     // List of reservations for tenant ###################################################
 
@@ -264,6 +264,8 @@ class ReservationServiceIntTest {
     CreateReservationDto invalidResDto3 = new CreateReservationDto(2l, "test", earlyStart, earlyEnd);
     @Autowired
     private TenantRepository tenantRepository;
+    @Autowired
+    private ReportRepository reportRepository;
 
 
     @Test
