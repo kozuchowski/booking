@@ -99,7 +99,10 @@ public class ReservationServiceImpl implements ReservationService{
         validateReservationDates(resDto);
 
         // TODO validation should not include dates in current reservation
+        res.setStartDate(LocalDateTime.of(0,1,1,1,1,1,0));
+        res.setEndDate(LocalDateTime.of(0,1,1,1,1,1,1));
 
+        reservationRepository.saveAndFlush(res);
 
         checkIfVacant(resDto);
 
