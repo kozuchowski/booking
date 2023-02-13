@@ -24,7 +24,8 @@ public class FaclitiServiceImpl implements FacilityService{
         List<Facility> facilities = fr.findAll();
         List<ShowFacilityDto> facilitiDtos = new ArrayList<>();
         for (Facility facility : facilities) {
-            var facilityDto = new ShowFacilityDto(facility.getName(),
+            var facilityDto = new ShowFacilityDto(  facility.getId(),
+                                                    facility.getName(),
                                                     facility.getDescription(),
                                                     facility.getGrossPricePerDayInPln(),
                                                     facility.getAreaInMeters());
